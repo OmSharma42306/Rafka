@@ -1,20 +1,18 @@
 use std::fs::{OpenOptions};
-
-use std::fs::{OpenOptions};
 use std::io::{ Write,Seek,SeekFrom };
 use std::path::PathBuf;
 
 use crate::log::message::Message;
 use serde_json;
 
-struct Partition{
+pub struct Partition{
     id : u32,
-    path : String,
+    path : PathBuf,
     next_offset : u64,
 }
 
 impl Partition{
-    pub fn new(id : i32, path : PathBuf) -> Self{
+    pub fn new(id : u32, path : PathBuf) -> Self{
         Self { id, path, next_offset: 0 }
     }
 

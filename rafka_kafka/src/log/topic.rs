@@ -1,5 +1,6 @@
-use std::path::PathBuf;
+use std::{fmt::format, path::PathBuf};
 use crate::log::partition::Partition;
+use std::fs;
 
 pub struct Topic{
     pub name : String,
@@ -13,7 +14,9 @@ impl Topic {
         let mut partitions = Vec::new();
 
         for i in 0..num_partitions {
-            let path = PathBuf::from(format!("data/{}/partition-{}.log",name,i));
+            let dir = format!("data/{}",name);
+            fs::create_dir_all(&dir);
+            let path: PathBuf = PathBuf::from(format!("{}/partition-{}.log",dir,i));
             partitions.push(Partition::new(i, path));
         }
 
