@@ -1,7 +1,7 @@
 use std::{fmt::format, path::PathBuf};
 use crate::log::partition::Partition;
 use std::fs;
-
+#[derive(Debug)]
 pub struct Topic{
     pub name : String,
     pub partitions : Vec<Partition>,

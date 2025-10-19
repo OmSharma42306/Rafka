@@ -1,10 +1,10 @@
 use std::fs::{OpenOptions};
 use std::io::{ Write,Seek,SeekFrom };
 use std::path::PathBuf;
-
 use crate::log::message::Message;
 use serde_json;
 
+#[derive(Debug)]
 pub struct Partition{
     id : u32,
     path : PathBuf,
