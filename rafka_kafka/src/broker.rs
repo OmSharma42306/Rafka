@@ -48,7 +48,37 @@ fn handle_client(mut stream:TcpStream,topics : Arc<Mutex<Vec<Topic>>>){
 
         let input = String::from_utf8_lossy(&buffer[..n]);
         println!("Receievd : {}",input);
-        // TODO : Parsing Commands...
+        
+        let mut parts = input.splitn(4,' ');
+        println!("Parts : {:?}",parts);
+        let command  = parts.next().unwrap_or("");
+        println!("Command : {:?}",command);
+
+        match command {
+            "PRODUCE" => {
+                let topic_name = parts.next().unwrap_or("");
+                let key = parts.next().map(|k| k.to_string());
+                let value = parts.next().unwrap_or("").to_string();
+
+                let mut topics_guard = topics.lock().unwrap();  
+                if let Some(topic) = topics_guard.iter_mut().find(|t| t.name == topic_name){
+                    match topic.send(key, value) {
+                        Ok(_) => {
+                            stream.write_all(b"OK\n").unwrap();
+                        }
+                        Err(e)=>{
+                            let err_msg = format!("ERROR: {}\n", e);
+                            stream.write_all(err_msg.as_bytes()).unwrap();
+                        }    
+                    }
+                }else{
+                    stream.write_all(b"ERROR: Unknown topic\n").unwrap();
+                }
+            }
+            _ =>{
+                stream.write_all(b"ERROR: Unknown command\n").unwrap();
+            }
+        }
         let response = "ACK\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
