@@ -34,7 +34,7 @@ impl Topic {
         Ok(())
     }
 
-    pub fn read_from(&self, offset : usize, path : PathBuf,partition_id:usize)-> io::Result<Vec<Message>>{
+    pub fn read_from(&self, offset : usize,partition_id:usize)-> io::Result<Vec<Message>>{
         let partition = self.partitions.get(partition_id).ok_or_else(||io::Error::new(io::ErrorKind::NotFound,"Invalid Partition ID..."))?;
 
         

@@ -75,6 +75,31 @@ fn handle_client(mut stream:TcpStream,topics : Arc<Mutex<Vec<Topic>>>){
                     stream.write_all(b"ERROR: Unknown topic\n").unwrap();
                 }
             }
+
+            "CONSUME"=>{
+                let topic_name = parts.next().unwrap_or("");
+                  let partition_str = parts.next().unwrap_or("0");
+                let offset_str = parts.next().unwrap_or("0");
+                let offset : usize = offset_str.parse().unwrap_or(0);
+                
+                let partition_id: usize = partition_str.parse().unwrap_or(0);
+                let  topics_guard = topics.lock().unwrap();  
+                if let Some(topic) = topics_guard.iter().find(|t| t.name == topic_name){
+                    match topic.read_from(offset,partition_id) {
+                            Ok(messages)=>{
+                                for msg in messages{
+                                    let line = format!("{}:{}\n",msg.offset,msg.value);
+                                    stream.write_all(line.as_bytes()).unwrap();
+                                }
+                            }
+                            Err(e)=>{
+                                let err_msg = format!("ERROR : {}\n",e);
+                                stream.write_all(err_msg.as_bytes()).unwrap();
+                            }
+                    }
+                }
+
+            }
             _ =>{
                 stream.write_all(b"ERROR: Unknown command\n").unwrap();
             }
