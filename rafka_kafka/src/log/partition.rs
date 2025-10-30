@@ -7,8 +7,8 @@ use serde_json;
 #[derive(Debug)]
 pub struct Partition{
     id : u32,
-    path : PathBuf,
-    next_offset : u64,
+   pub path : PathBuf,
+    next_offset : usize,
 }
 
 impl Partition{
